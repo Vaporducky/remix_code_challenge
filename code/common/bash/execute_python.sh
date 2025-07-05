@@ -26,12 +26,36 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # -----------------------------------------------------------------------------
+# Logging
+# -----------------------------------------------------------------------------
+_log() {
+    local level="$1"; shift
+    printf '[%s] [%s] %s\n' "$(date +'%F %T')" "${level}" "$*"
+}
+
+log_info()  {
+    _log "INFO"  "$@";
+}
+
+log_error() {
+    _log "ERROR" "$@" >&2;
+}
+
+# -----------------------------------------------------------------------------
 # Globals (read-only)
 # -----------------------------------------------------------------------------
 readonly SCRIPT_NAME="$(basename "$0")"
-readonly DEFAULT_PYENV_NAME="apache_spark_practice"
-readonly DEFAULT_PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
-readonly DEFAULT_PYENV_BIN="${DEFAULT_PYENV_ROOT}/versions/${DEFAULT_PYENV_NAME}/bin/python"
+
+if [[ "${SPARK_HOME:-}" == "/opt/bitnami/spark" ]]; then
+    log_info "Executing inside Bitnami Spark container."
+    readonly DEFAULT_PYENV_NAME="python"
+    readonly DEFAULT_PYENV_ROOT="/opt/bitnami/"
+    readonly DEFAULT_PYENV_BIN="${DEFAULT_PYENV_ROOT}/${DEFAULT_PYENV_NAME}/bin/python"
+else
+    readonly DEFAULT_PYENV_NAME="remix_code_challenge"
+    readonly DEFAULT_PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
+    readonly DEFAULT_PYENV_BIN="${DEFAULT_PYENV_ROOT}/versions/${DEFAULT_PYENV_NAME}/bin/python"
+fi
 
 # -----------------------------------------------------------------------------
 # Usage / Help
@@ -46,22 +70,6 @@ Options:
   -h, --help                Show this help message and exit
 EOF
     exit "${1:-0}"
-}
-
-# -----------------------------------------------------------------------------
-# Logging
-# -----------------------------------------------------------------------------
-_log() {
-    local level="$1"; shift
-    printf '[%s] [%s] %s\n' "$(date +'%F %T')" "${level}" "$*"
-}
-
-log_info()  {
-    _log "INFO"  "$@";
-}
-
-log_error() {
-    _log "ERROR" "$@" >&2;
 }
 
 # -----------------------------------------------------------------------------

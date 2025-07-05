@@ -3,7 +3,6 @@ from abc import abstractmethod
 
 from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
-from delta import configure_spark_with_delta_pip
 
 from base.singleton import SingletonABCMeta
 
@@ -73,10 +72,7 @@ class GenSpark(BaseSpark):
         )
 
         # Determine the builder
-        if strategy == Strategy.DELTA.value:
-            spark = configure_spark_with_delta_pip(builder).getOrCreate()
-            return spark
-        elif strategy == Strategy.VANILLA.value:
+        if strategy == Strategy.VANILLA.value:
             return builder.getOrCreate()
         elif strategy == Strategy.HIVE:
             return builder.enableHiveSupport().getOrCreate()

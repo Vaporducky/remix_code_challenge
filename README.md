@@ -2,12 +2,20 @@
 
 ## Introduction
 
+## Configuration
+1. Build the Spark-Postgres image:
+```commandline
+docker buildx build \
+  --tag local_repo/spark-postgres-0.0.1 \
+  --file build/docker/spark/Dockerfile \
+  .
+```
+
 ## Setup
 
 ### Initialization
 ```commandline
-docker compose up -d &&
-docker compose up 
+docker compose up -d && docker compose up 
 ```
 
 ### Accessing containers
