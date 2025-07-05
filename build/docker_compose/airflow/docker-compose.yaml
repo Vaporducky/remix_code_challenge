@@ -340,6 +340,23 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+  dbt:
+    container_name: dbt_container
+    image: ghcr.io/dbt-labs/dbt-postgres:1.9.0
+    environment:
+      DBT_PROFILES_DIR: "/root/.dbt"
+    working_dir: /usr/app
+    entrypoint: bash
+    command: -c "tail -f /dev/null"
+    volumes:
+      - ../../../dbt:/usr/app
+      - ../../../dbt:/root/.dbt
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - virtual_resort
+
 volumes:
   postgres-db-volume:
 

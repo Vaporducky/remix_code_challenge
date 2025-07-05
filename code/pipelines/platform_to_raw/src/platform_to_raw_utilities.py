@@ -25,9 +25,22 @@ class PostgresSink:
 
 
 @dataclass
+class PostgresSource:
+    jdbc_url: str = field(repr=False)
+    user: str = field(repr=False)
+    password: str = field(repr=False)
+    driver: str = field(repr=False)
+    sources: dict[str, str] = field(repr=False)
+
+    def get_table_namespace(self, table: str):
+        return f"{self.sources[table]}.{table}"
+
+
+@dataclass
 class JobArguments:
     job_name: str
-    source_data_path: Path
+    source_configuration_path: Path
+    source_configuration: PostgresSource
     sink_configuration_path: Path
     sink_configuration: PostgresSink
 
@@ -42,14 +55,14 @@ class JobArguments:
         parser.add_argument(
             "--job_name", "-j",
             type=str,
-            default="source_to_seed_job",
+            default="platform_to_raw_job",
             help="Name of the job."
         )
         parser.add_argument(
-            "--source_data_path",
+            "--source_configuration_path",
             type=Path,
             required=True,
-            help="Path which contains source data as CSVs."
+            help="Path which contains source configuration."
         )
         parser.add_argument(
             "--sink_configuration_path",
@@ -65,6 +78,14 @@ class JobArguments:
         # Map namespace into dictionary
         args_to_dict = {arg: value for arg, value in vars(args).items()}
         logging.info(json.dumps(args_to_dict, indent=4, default=str))
+
+    @staticmethod
+    def _generate_source_configuration(sink_config_path: Path):
+        with open(sink_config_path, 'r') as f:
+            source_config = {**yaml.safe_load(f)["postgres"]}
+            logging.info(f"Config: {source_config}")
+
+        return PostgresSource(**source_config)
 
     @staticmethod
     def _generate_sink_configuration(sink_config_path: Path):
@@ -85,10 +106,14 @@ class JobArguments:
         logging.info("Parsed arguments:")
         logging.info(cls._log_args(parsed))
 
+        logging.info("Getting source configuration")
+        source_configuration = cls._generate_source_configuration(parsed.source_configuration_path)
+
         logging.info("Getting sink configuration")
         sink_configuration = cls._generate_sink_configuration(parsed.sink_configuration_path)
 
         return cls(job_name=parsed.job_name,
-                   source_data_path=parsed.source_data_path,
+                   source_configuration_path=parsed.source_configuration_path,
+                   source_configuration=source_configuration,
                    sink_configuration_path=parsed.sink_configuration_path,
                    sink_configuration=sink_configuration)

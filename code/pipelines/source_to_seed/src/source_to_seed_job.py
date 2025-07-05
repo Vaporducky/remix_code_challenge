@@ -19,7 +19,7 @@ class SourceToSeedJob:
         self.gen_spark_session: GenSpark = GenSpark(
             conf=spark_config,
             job_name="source_to_seed_job",
-            strategy="hive"
+            strategy="vanilla"
         )
 
     def _generate_file_mapping(self):

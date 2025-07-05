@@ -1,6 +1,6 @@
 postgres:
     jdbc_url: 'jdbc:postgresql://localhost:5432/platform'
-    targets: {
+    sources: {
       sellers: ecommerce
     }
     user: spark_user

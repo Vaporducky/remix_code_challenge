@@ -1,0 +1,8 @@
+postgres:
+    jdbc_url: 'jdbc:postgresql://localhost:5432/warehouse'
+    targets: {
+      seller: raw
+    }
+    user: dbt_user
+    password: kuromi
+    driver: 'org.postgresql.Driver'

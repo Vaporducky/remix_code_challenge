@@ -2,9 +2,9 @@ import sys
 import logging
 
 import common_utilities
-import src.source_to_seed_utilities as utilities
-import src.source_to_seed_constants as constants
-from src.source_to_seed_job import SourceToSeedJob
+import src.platform_to_raw_utilities as utilities
+import src.platform_to_raw_constants as constants
+from src.platform_to_raw_job import PlatformToRawJob
 
 
 def main():
@@ -13,8 +13,7 @@ def main():
     logging.info("Argument parsing completed successfully.")
 
     # Instantiate job
-    job = SourceToSeedJob(spark_config=constants.CONFIG,
-                          job_args=args)
+    job = PlatformToRawJob(spark_config=constants.CONFIG, job_args=args)
 
     # Execute job
     try:
