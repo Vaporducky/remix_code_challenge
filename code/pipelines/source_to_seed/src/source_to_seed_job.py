@@ -22,6 +22,13 @@ class SourceToSeedJob:
             strategy="vanilla"
         )
 
+    @staticmethod
+    def _normalize_entity(entity: str) -> str:
+        if entity.endswith("s"):
+            return entity[:-1]
+        else:
+            return entity
+
     def _generate_file_mapping(self):
         csv_files: tuple[Path] = tuple(
             self.job_args.source_data_path.glob("olist*")
@@ -31,7 +38,7 @@ class SourceToSeedJob:
         # Generate mapping between table name and its system filepath
         logging.info(f"Generating file-table mapping.")
         file_mapping: dict[str, Path] = {
-            next(pattern.finditer(csv_file.stem), None).group(): csv_file
+            self._normalize_entity(next(pattern.finditer(csv_file.stem)).group()): csv_file
             for csv_file in csv_files
         }
         logging.info(f"Successfully generated mapping.")
@@ -42,27 +49,26 @@ class SourceToSeedJob:
         file_mapping = self._generate_file_mapping()
 
         for table_name, file_path in file_mapping.items():
-            if table_name == 'sellers':
-                logging.info(f"Processing file `{file_path}`:")
-                df: DataFrame = (
-                    self.gen_spark_session.spark.read
-                    .format("csv")
-                    .options(header=True,
-                             delimiter=",")
-                    .load(file_path.as_posix())
-                )
+            logging.info(f"Processing file `{file_path}`:")
+            df: DataFrame = (
+                self.gen_spark_session.spark.read
+                .format("csv")
+                .options(header=True,
+                         delimiter=",")
+                .load(file_path.as_posix())
+            )
 
-                # Get the table namespace
-                table_namespace = self.sink_config.get_table_namespace(table_name)
-                logging.info(f"Writing into `{table_namespace}`.")
-                (
-                    df.write
-                    .option("url", self.sink_config.jdbc_url)
-                    .option("dbtable", table_namespace)
-                    .option("user", self.sink_config.user)
-                    .option("password", self.sink_config.password)
-                    .option("driver", self.sink_config.driver)
-                    .format("jdbc")
-                    .mode("overwrite")
-                    .save()
-                )
+            # Get the table namespace
+            table_namespace = self.sink_config.get_table_namespace(table_name)
+            logging.info(f"Writing into `{table_namespace}`.")
+            (
+                df.write
+                .option("url", self.sink_config.jdbc_url)
+                .option("dbtable", table_namespace)
+                .option("user", self.sink_config.user)
+                .option("password", self.sink_config.password)
+                .option("driver", self.sink_config.driver)
+                .format("jdbc")
+                .mode("overwrite")
+                .save()
+            )

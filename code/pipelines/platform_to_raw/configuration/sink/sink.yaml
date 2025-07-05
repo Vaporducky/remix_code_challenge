@@ -1,7 +1,14 @@
 postgres:
     jdbc_url: 'jdbc:postgresql://localhost:5432/warehouse'
     targets: {
-      seller: raw
+      customer: raw,
+      geolocation: raw,
+      order_item: raw,
+      order_payment: raw,
+      order_review: raw,
+      order: raw,
+      product: raw,
+      seller: raw,
     }
     user: dbt_user
     password: kuromi

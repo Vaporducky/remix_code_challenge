@@ -28,31 +28,29 @@ class PlatformToRawJob:
             src_table_namespace = self.source_config.get_table_namespace(table_name)
             logging.info(f"Processing table `{src_table_namespace}`:")
 
-            if table_name == 'sellers':
-                df: DataFrame = (
-                    self.gen_spark_session.spark.read
-                    .option("url", self.source_config.jdbc_url)
-                    .option("dbtable", src_table_namespace)
-                    .option("user", self.source_config.user)
-                    .option("password", self.source_config.password)
-                    .option("driver", self.source_config.driver)
-                    .format("jdbc")
-                    .load()
-                )
+            df: DataFrame = (
+                self.gen_spark_session.spark.read
+                .option("url", self.source_config.jdbc_url)
+                .option("dbtable", src_table_namespace)
+                .option("user", self.source_config.user)
+                .option("password", self.source_config.password)
+                .option("driver", self.source_config.driver)
+                .format("jdbc")
+                .load()
+            )
 
         for table_name, schema in self.sink_config.targets.items():
-            if table_name == 'seller':
-                # Get the table namespace
-                tgt_table_namespace = self.sink_config.get_table_namespace(table_name)
-                logging.info(f"Writing into `{tgt_table_namespace}`.")
-                (
-                    df.write
-                    .option("url", self.sink_config.jdbc_url)
-                    .option("dbtable", tgt_table_namespace)
-                    .option("user", self.sink_config.user)
-                    .option("password", self.sink_config.password)
-                    .option("driver", self.sink_config.driver)
-                    .format("jdbc")
-                    .mode("overwrite")
-                    .save()
-                )
+            # Get the table namespace
+            tgt_table_namespace = self.sink_config.get_table_namespace(table_name)
+            logging.info(f"Writing into `{tgt_table_namespace}`.")
+            (
+                df.write
+                .option("url", self.sink_config.jdbc_url)
+                .option("dbtable", tgt_table_namespace)
+                .option("user", self.sink_config.user)
+                .option("password", self.sink_config.password)
+                .option("driver", self.sink_config.driver)
+                .format("jdbc")
+                .mode("overwrite")
+                .save()
+            )
