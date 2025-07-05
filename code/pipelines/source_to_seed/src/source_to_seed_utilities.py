@@ -1,16 +1,34 @@
+import json
+import yaml
 import argparse
 import logging
-import json
 from pathlib import Path
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
+
+@dataclass(frozen=True)
+class PostgresSink:
+    jdbc_url: str = field(repr=False)
+    user: str = field(repr=False)
+    password: str = field(repr=False)
+    driver: str = field(repr=False)
+    targets: dict[str, str] = field(repr=False)
+    batchsize: int = field(repr=False, default=1000)
+    num_partitions: Optional[int] = field(repr=False, default=None)
+    partition_col: Optional[str] = field(repr=False, default=None)
+    lower_bound: Optional[int] = field(repr=False, default=None)
+    upper_bound: Optional[int] = field(repr=False, default=None)
+
+    def get_table_namespace(self, table: str):
+        return f"{self.targets[table]}.{table}"
 
 @dataclass
 class JobArguments:
     job_name: str
     source_data_path: Path
-    target_path: Path
+    sink_configuration_path: Path
+    sink_configuration: PostgresSink
 
     @staticmethod
     def _build_parser():
@@ -33,10 +51,10 @@ class JobArguments:
             help="Path which contains source data as CSVs."
         )
         parser.add_argument(
-            "--target_path",
+            "--sink_configuration_path",
             type=Path,
             required=True,
-            help="Target path where processed CSVs will be written."
+            help="Path which contains sink configuration."
         )
 
         return parser
@@ -47,6 +65,13 @@ class JobArguments:
         args_to_dict = {arg: value for arg, value in vars(args).items()}
         logging.info(json.dumps(args_to_dict, indent=4, default=str))
 
+    @staticmethod
+    def _generate_sink_configuration(sink_config_path: Path):
+        with open(sink_config_path, 'r') as f:
+            sink_config = {**yaml.safe_load(f)["postgres"]}
+
+        return PostgresSink(**sink_config)
+
     @classmethod
     def from_args(cls, args: Optional[list[str]] = None) -> "JobArguments":
         """
@@ -56,9 +81,13 @@ class JobArguments:
         parser = cls._build_parser()
         parsed = parser.parse_args(args)
 
-        logging.info(f"Parsed arguments:")
+        logging.info("Parsed arguments:")
         logging.info(cls._log_args(parsed))
+
+        logging.info("Getting sink configuration")
+        sink_configuration = cls._generate_sink_configuration(parsed.sink_configuration_path)
 
         return cls(job_name=parsed.job_name,
                    source_data_path=parsed.source_data_path,
-                   target_path=parsed.target_path)
+                   sink_configuration_path=parsed.sink_configuration_path,
+                   sink_configuration=sink_configuration)

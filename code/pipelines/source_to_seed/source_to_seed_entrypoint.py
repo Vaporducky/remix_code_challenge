@@ -1,3 +1,4 @@
+import sys
 import logging
 
 import common_utilities
@@ -21,7 +22,7 @@ def main():
         job.run()
     except Exception as e:
         logging.exception(f"An error has occurred.", exc_info=e)
-        raise e
+        sys.exit(1)
     else:
         logging.info(f"Pipeline successful.")
 

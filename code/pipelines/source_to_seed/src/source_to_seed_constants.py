@@ -12,11 +12,6 @@ CONFIG: SparkConfiguration = {
     "spark.sql.adaptive.enabled": "true",
     "spark.sql.adaptive.coalescePartitions": "true",
     "spark.sql.adaptive.skewJoin.enabled": "true",
-    # Hive catalog configuration
-    "spark.sql.warehouse.dir": "file:///tmp/spark-warehouse",
-    "spark.sql.catalogImplementation": "hive",
-    "spark.sql.hive.metastore.version": "2.3.9",
-    "spark.jars.packages": "org.apache.spark:spark-sql_2.12:3.5.1,org.apache.spark:spark-hive_2.12:3.5.1",
-    # Java options
-    "spark.executor.extraJavaOptions": "-Duser.timezone=Etc/UTC",
+    # Postgres SQL Configuration
+    "spark.jars": "/home/elianther/bin/spark-3.5.1/jars/postgresql-42.7.3.jar"
 }

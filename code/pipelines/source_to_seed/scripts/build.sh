@@ -3,8 +3,10 @@
 # Exit on any error
 set -e
 
+JOB_NAME=source_to_seed
+
 bash code/common/bash/execute_python.sh \
-    --script "code/pipelines/source_to_seed/source_to_seed_entrypoint.py" \
+    --script "code/pipelines/${JOB_NAME}/${JOB_NAME}_entrypoint.py" \
     --common "code/common" \
-    --source_data_path="data/" \
-    --target_path="dbt/e_commerce_brazil/seeds"
+    --source_data_path="data/input" \
+    --sink_configuration_path="code/pipelines/${JOB_NAME}/configuration/sink/sink.yaml"
