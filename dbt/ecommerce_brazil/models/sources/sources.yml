@@ -4,7 +4,7 @@ sources:
   - name: raw
     database: warehouse
     tables:
-      - name: orders
+      - name: order
         description: ''
         columns:
           - name: order_id
@@ -23,7 +23,7 @@ sources:
             description: ''
           - name: order_estimated_delivery_date
             description: ''
-      - name: products
+      - name: product
         description: ''
         columns:
           - name: product_id
@@ -44,7 +44,7 @@ sources:
             description: ''
           - name: product_width_cm
             description: ''
-      - name: sellers
+      - name: seller
         description: ''
         columns:
           - name: seller_id
@@ -55,7 +55,7 @@ sources:
             description: ''
           - name: seller_state
             description: ''
-      - name: customers
+      - name: customer
         description: ''
         columns:
           - name: customer_id
@@ -94,7 +94,7 @@ sources:
             description: ''
           - name: geolocation_state
             description: ''
-      - name: order_reviews
+      - name: order_review
         description: ''
         columns:
           - name: review_id
@@ -111,7 +111,7 @@ sources:
             description: ''
           - name: review_answer_timestamp
             description: ''
-      - name: order_items
+      - name: order_item
         description: ''
         columns:
           - name: order_id

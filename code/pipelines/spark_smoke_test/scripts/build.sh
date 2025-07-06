@@ -6,5 +6,5 @@ set -e
 JOB_NAME=spark_smoke_test
 
 bash code/common/bash/execute_python.sh \
-    --script "code/pipelines/${JOB_NAME}/${JOB_NAME}_entrypoint.py" \
+    --target "code/pipelines/${JOB_NAME}/${JOB_NAME}_entrypoint.py" \
     --common "code/common"

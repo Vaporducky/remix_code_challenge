@@ -348,7 +348,7 @@ services:
       DBT_PROFILES_DIR: "/root/.dbt"
     working_dir: /usr/app
     entrypoint: bash
-#    command: -c "tail -f /dev/null"
+    command: -c "tail -f /dev/null"
     volumes:
       - ../../../dbt:/usr/app
       - ../../../dbt:/root/.dbt

@@ -10,7 +10,7 @@ from standards.gen_spark import GenSpark
 class SourceToSeedJob:
     def __init__(self, spark_config, job_args: utilities.JobArguments):
         self.job_args = job_args
-        self.source_config: CsvSink = self.job_args.source_configuration
+        self.source_config: CsvSource = self.job_args.source_configuration
         self.sink_config: PostgresSink = self.job_args.sink_configuration
         self.gen_spark_session: GenSpark = GenSpark(
             conf=spark_config,
