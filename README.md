@@ -33,3 +33,45 @@ docker compose exec dbt
 ```commandline
 docker compose down --volumes --remove-orphans
 ```
+## DBT
+### Macro
+In order to use other schemas, it is necessary (for us) to override the custom
+schema generation. The custom logic:
+```jinja
+{% macro generate_schema_name(custom_schema_name, node) -%}
+
+    {%- set default_schema = target.schema -%}
+    {%- if custom_schema_name is none -%}
+
+        {{ default_schema }}
+
+    {%- else -%}
+
+        {{ default_schema }}_{{ custom_schema_name | trim }}
+
+    {%- endif -%}
+
+{%- endmacro %}
+```
+
+As one may appreciate, the line 
+`{{ default_schema }}_{{ custom_schema_name | trim }}` will add a suffix
+to our default schema (which we do not want!). Instead, we will override the
+behavior with the following:
+
+```jinja
+{% macro generate_schema_name(custom_schema_name, node) -%}
+
+  {%- if custom_schema_name is not none -%}
+  
+    {{ return(custom_schema_name) }}
+
+  {%- endif -%}
+
+  {{ return(target.schema) }}
+
+{%- endmacro %}
+```
+
+Which will allows us to use our custom schemas instead of suffixing the default
+schema.
