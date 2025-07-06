@@ -1,0 +1,5 @@
+TARGET_DIRECTORY=$1
+
+sudo chmod -R g+rw $TARGET_DIRECTORY;
+sudo chgrp -R $USER  $TARGET_DIRECTORY;
+sudo chmod -R 770  $TARGET_DIRECTORY

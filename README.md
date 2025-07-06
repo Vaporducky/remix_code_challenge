@@ -1,28 +1,77 @@
 # Remix Code Challenge
 
+## Introduction
+
+## Configuration
+1. Build the Spark-Postgres image:
+```commandline
+docker buildx build \
+  --tag local_repo/spark-postgres-0.0.1 \
+  --file build/docker/spark/Dockerfile \
+  .
+```
+
 ## Setup
-```bash
-pip install dbt-core dbt-spark
+
+### Initialization
+```commandline
+docker compose up -d && docker compose up 
 ```
 
-```bash
-pip install 'dbt-spark[PyHive]'
+### Accessing containers
+**Enter the Postgres Container**
+```commandline
+docker compose exec postgres psql -U airflow -d airflow
 ```
 
-**Launch a Thrift server**
-```bash
-spark-submit \
-  --master 'local[*]' \
-  --conf spark.executor.extraJavaOptions=-Duser.timezone=Etc/UTC \
-  --conf spark.eventLog.enabled=false \
-  --conf spark.sql.warehouse.dir=file:///tmp/spark-warehouse  \
-  --packages 'org.apache.spark:spark-sql_2.12:3.5.1,org.apache.spark:spark-hive_2.12:3.5.1' \
-  --class org.apache.spark.sql.hive.thriftserver.HiveThriftServer2 \
-  --name "Thrift JDBC/ODBC Server" \
-  --executor-memory 1g
+**Enter the DBT Container**
+```commandline
+docker compose exec dbt
 ```
 
-**Connect to the Thrift server**
-```bash
-beeline -u jdbc:hive2://localhost:10000/default
+### Cleaning the environment
+```commandline
+docker compose down --volumes --remove-orphans
 ```
+## DBT
+### Macro
+In order to use other schemas, it is necessary (for us) to override the custom
+schema generation. The custom logic:
+```jinja
+{% macro generate_schema_name(custom_schema_name, node) -%}
+
+    {%- set default_schema = target.schema -%}
+    {%- if custom_schema_name is none -%}
+
+        {{ default_schema }}
+
+    {%- else -%}
+
+        {{ default_schema }}_{{ custom_schema_name | trim }}
+
+    {%- endif -%}
+
+{%- endmacro %}
+```
+
+As one may appreciate, the line 
+`{{ default_schema }}_{{ custom_schema_name | trim }}` will add a suffix
+to our default schema (which we do not want!). Instead, we will override the
+behavior with the following:
+
+```jinja
+{% macro generate_schema_name(custom_schema_name, node) -%}
+
+  {%- if custom_schema_name is not none -%}
+  
+    {{ return(custom_schema_name) }}
+
+  {%- endif -%}
+
+  {{ return(target.schema) }}
+
+{%- endmacro %}
+```
+
+Which will allows us to use our custom schemas instead of suffixing the default
+schema.

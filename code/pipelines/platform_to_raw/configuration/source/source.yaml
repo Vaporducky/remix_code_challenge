@@ -1,0 +1,15 @@
+postgres:
+    jdbc_url: 'jdbc:postgresql://localhost:5432/platform'
+    sources: {
+      customer: ecommerce,
+      geolocation: ecommerce,
+      order_item: ecommerce,
+      order_payment: ecommerce,
+      order_review: ecommerce,
+      order: ecommerce,
+      product: ecommerce,
+      seller: ecommerce,
+    }
+    user: spark_user
+    password: hello_kitty
+    driver: 'org.postgresql.Driver'

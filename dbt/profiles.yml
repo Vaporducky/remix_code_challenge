@@ -1,0 +1,12 @@
+ecommerce_brazil:
+  outputs:
+    dev:
+      dbname: warehouse
+      host: postgres
+      pass: kuromi
+      port: 5432
+      schema: raw
+      threads: 4
+      type: postgres
+      user: dbt_user
+  target: dev

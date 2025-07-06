@@ -1,0 +1,15 @@
+postgres:
+    jdbc_url: 'jdbc:postgresql://localhost:5432/warehouse'
+    targets: {
+      customer: raw,
+      geolocation: raw,
+      order_item: raw,
+      order_payment: raw,
+      order_review: raw,
+      order: raw,
+      product: raw,
+      seller: raw,
+    }
+    user: dbt_user
+    password: kuromi
+    driver: 'org.postgresql.Driver'

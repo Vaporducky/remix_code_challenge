@@ -1,0 +1,21 @@
+file:
+    sources: {
+      "customer": "data/input/olist_customers_dataset.csv",
+      "geolocation": "data/input/olist_geolocation_dataset.csv",
+      "order": "data/input/olist_orders_dataset.csv",
+      "order_item": "data/input/olist_order_items_dataset.csv",
+      "order_payment": "data/input/olist_order_payments_dataset.csv",
+      "order_review": "data/input/olist_order_reviews_dataset.csv",
+      "product": "data/input/olist_products_dataset.csv",
+      "seller": "data/input/olist_sellers_dataset.csv"
+    }
+    schemas: {
+      "customer": "code/pipelines/source_to_seed/configuration/source/customer.json",
+      "geolocation": "code/pipelines/source_to_seed/configuration/source/geolocation.json",
+      "order": "code/pipelines/source_to_seed/configuration/source/order.json",
+      "order_item": "code/pipelines/source_to_seed/configuration/source/order_item.json",
+      "order_payment": "code/pipelines/source_to_seed/configuration/source/order_payment.json",
+      "order_review": "code/pipelines/source_to_seed/configuration/source/order_review.json",
+      "product": "code/pipelines/source_to_seed/configuration/source/product.json",
+      "seller": "code/pipelines/source_to_seed/configuration/source/seller.json"
+    }
