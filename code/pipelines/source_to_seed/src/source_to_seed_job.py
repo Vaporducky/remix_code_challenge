@@ -1,24 +1,20 @@
-import re
 import logging
-import yaml
-from pathlib import Path
 
-import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
 
 import src.source_to_seed_utilities as utilities
-from src.source_to_seed_utilities import PostgresSink
-import src.source_to_seed_constants as constants
+from src.source_to_seed_utilities import PostgresSink, CsvSource
 from standards.gen_spark import GenSpark
 
 
 class SourceToSeedJob:
     def __init__(self, spark_config, job_args: utilities.JobArguments):
         self.job_args = job_args
+        self.source_config: CsvSink = self.job_args.source_configuration
         self.sink_config: PostgresSink = self.job_args.sink_configuration
         self.gen_spark_session: GenSpark = GenSpark(
             conf=spark_config,
-            job_name="source_to_seed_job",
+            job_name=self.job_args.job_name,
             strategy="vanilla"
         )
 
@@ -29,33 +25,17 @@ class SourceToSeedJob:
         else:
             return entity
 
-    def _generate_file_mapping(self):
-        csv_files: tuple[Path] = tuple(
-            self.job_args.source_data_path.glob("olist*")
-        )
-        pattern = re.compile(r"(?<=olist_).\w+(?=_dataset)")
-
-        # Generate mapping between table name and its system filepath
-        logging.info(f"Generating file-table mapping.")
-        file_mapping: dict[str, Path] = {
-            self._normalize_entity(next(pattern.finditer(csv_file.stem)).group()): csv_file
-            for csv_file in csv_files
-        }
-        logging.info(f"Successfully generated mapping.")
-
-        return file_mapping
-
     def run(self):
-        file_mapping = self._generate_file_mapping()
 
-        for table_name, file_path in file_mapping.items():
+        for table_name, file_path in self.source_config.sources.items():
             logging.info(f"Processing file `{file_path}`:")
             df: DataFrame = (
                 self.gen_spark_session.spark.read
                 .format("csv")
                 .options(header=True,
                          delimiter=",")
-                .load(file_path.as_posix())
+                .schema(self.source_config.schemas[table_name])
+                .load(file_path)
             )
 
             # Get the table namespace

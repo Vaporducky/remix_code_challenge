@@ -6,6 +6,8 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Optional
 
+from pyspark.sql.types import StructType
+
 
 @dataclass(frozen=True)
 class PostgresSink:
@@ -24,10 +26,23 @@ class PostgresSink:
         return f"{self.targets[table]}.{table}"
 
 
+@dataclass(frozen=True)
+class CsvSource:
+    sources: dict[str, str] = field(repr=False)
+    schemas: dict[str, StructType] = field(repr=False)
+
+    @staticmethod
+    def generate_schema_from_json(schema_path: Path):
+        with open(schema_path, 'r') as f:
+            schema = json.load(f)
+
+        return StructType.fromJson(schema)
+
 @dataclass
 class JobArguments:
     job_name: str
-    source_data_path: Path
+    source_configuration_path: Path
+    source_configuration: CsvSource
     sink_configuration_path: Path
     sink_configuration: PostgresSink
 
@@ -46,10 +61,10 @@ class JobArguments:
             help="Name of the job."
         )
         parser.add_argument(
-            "--source_data_path",
+            "--source_configuration_path",
             type=Path,
             required=True,
-            help="Path which contains source data as CSVs."
+            help="Path which contains source configuration"
         )
         parser.add_argument(
             "--sink_configuration_path",
@@ -67,8 +82,21 @@ class JobArguments:
         logging.info(json.dumps(args_to_dict, indent=4, default=str))
 
     @staticmethod
+    def _generate_source_configuration(source_config_path: Path):
+        with open(source_config_path, "r") as f:
+            source_config = {**yaml.safe_load(f)["file"]}
+
+        schema_map = {
+            table: CsvSource.generate_schema_from_json(schema)
+            for table, schema in source_config["schemas"].items()
+        }
+
+        return CsvSource(sources=source_config["sources"],
+                         schemas=schema_map)
+
+    @staticmethod
     def _generate_sink_configuration(sink_config_path: Path):
-        with open(sink_config_path, 'r') as f:
+        with open(sink_config_path, "r") as f:
             sink_config = {**yaml.safe_load(f)["postgres"]}
 
         return PostgresSink(**sink_config)
@@ -85,10 +113,14 @@ class JobArguments:
         logging.info("Parsed arguments:")
         logging.info(cls._log_args(parsed))
 
+        logging.info("Getting source configuration.")
+        source_configuration = cls._generate_source_configuration(parsed.source_configuration_path)
+
         logging.info("Getting sink configuration")
         sink_configuration = cls._generate_sink_configuration(parsed.sink_configuration_path)
 
         return cls(job_name=parsed.job_name,
-                   source_data_path=parsed.source_data_path,
+                   source_configuration_path=parsed.source_configuration_path,
+                   source_configuration=source_configuration,
                    sink_configuration_path=parsed.sink_configuration_path,
                    sink_configuration=sink_configuration)

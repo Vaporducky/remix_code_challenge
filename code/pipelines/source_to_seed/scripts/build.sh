@@ -8,5 +8,5 @@ JOB_NAME=source_to_seed
 bash code/common/bash/execute_python.sh \
     --script "code/pipelines/${JOB_NAME}/${JOB_NAME}_entrypoint.py" \
     --common "code/common" \
-    --source_data_path="data/input" \
+    --source_configuration_path="code/pipelines/${JOB_NAME}/configuration/source/source.yaml" \
     --sink_configuration_path="code/pipelines/${JOB_NAME}/configuration/sink/sink.yaml"
