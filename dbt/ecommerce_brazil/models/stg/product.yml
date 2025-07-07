@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: stg_product
+    description: >
+      This dataset includes data about the products sold by Olist.
+      It includes product identifiers, category names (in Portuguese and 
+      normalized to English), textual metadata (name and description lengths),
+      product dimensions, and weight.
+
+      Rows are filtered to exclude duplicates and invalid entries such as
+      negative dimensions, null product IDs, and malformed category names.
+      Category names are normalized using a seed lookup table.
+
+    columns:
+      - name: product_id
+        description: Unique identifier for each product.
+        tests:
+          - not_null
+          - unique
+
+      - name: product_category_name
+        description: Product category in Portuguese (original).
+
+      - name: product_category_name_english
+        description: Product category in English.
+
+      - name: product_name_length
+        description: Length of the product name text field.
+
+      - name: product_description_length
+        description: Length of the product description text field.
+
+      - name: product_photos_quantity
+        description: Number of photos associated with the product.
+
+      - name: product_weight_in_grams
+        description: Weight of the product in grams.
+
+      - name: product_length_cm
+        description: Product length in centimeters.
+
+      - name: product_height_cm
+        description: Product height in centimeters.
+
+      - name: product_width_cm
+        description: Product width in centimeters.

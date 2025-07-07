@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: customer
+    description: >
+      This staging table contains cleaned and validated customer records,
+      including location information such as city, state, and zip code. Each 
+      record represents a customer associated with an order in the order table.
+      While the `customer_id` is unique per order, the `customer_master_id` 
+      allows tracking repurchases by linking different `customer_id`s back to
+      the same underlying customer identity.
+
+      This table is primarily used to:
+        - Join with the orders dataset to enrich each order with customer and
+          geographic data.
+        - Enable customer-level analysis, such as retention and frequency of
+          repurchase.
+        - Perform geographic segmentation and delivery analysis.
+      
+      Staged customer. Normalized and cleaned version of raw customer records.
+      Drops customers that have:
+        - missing critical fields (IDs, state, zip)
+        - invalid zip format
+        - no matching geolocation zip code (foreign key integrity)
+        - duplicate customer_id values
+
+    columns:
+      - name: customer_id
+        description: Each order has a unique customer_id (PK).
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_master_id
+        description: >
+          Master-level ID that represents the actual user across multiple accounts or addresses.
+          Not unique; multiple customer_id values can map to the same master_id.
+        tests:
+          - not_null
+
+      - name: customer_zip_code_prefix
+        description: First 5 digits of the customer's zip code. FK to the geolocation table.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('geolocation')
+              field: geolocation_zip_code_prefix
+
+      - name: customer_city
+        description: Customer's city name. Standardized to uppercase.
+        tests: []
+
+      - name: customer_state
+        description: >
+          Two-letter state code (UF). Should be a valid Brazilian federal unit 
+          code (ISO 3166-2:BR).
+        tests:
+          - not_null
+          - accepted_values:
+              values: [
+                'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+                'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+                'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+              ]

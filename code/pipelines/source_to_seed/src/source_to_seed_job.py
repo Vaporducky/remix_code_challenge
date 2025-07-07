@@ -1,6 +1,6 @@
 import logging
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, DataFrameReader
 
 import src.source_to_seed_utilities as utilities
 from src.source_to_seed_utilities import PostgresSink, CsvSource
@@ -29,14 +29,31 @@ class SourceToSeedJob:
 
         for table_name, file_path in self.source_config.sources.items():
             logging.info(f"Processing file `{file_path}`:")
-            df: DataFrame = (
+
+            base_reader: DataFrameReader = (
                 self.gen_spark_session.spark.read
                 .format("csv")
-                .options(header=True,
-                         delimiter=",")
-                .schema(self.source_config.schemas[table_name])
-                .load(file_path)
+                .options(
+                    header=True,
+                    delimiter=","
+                )
             )
+
+            if table_name == "order_review":
+                df: DataFrame = (
+                    base_reader
+                    .options(multiline=True,
+                             quote="\"",
+                             escape="\\")
+                    .schema(self.source_config.schemas[table_name])
+                    .load(file_path)
+                )
+            else:
+                df: DataFrame = (
+                    base_reader
+                    .schema(self.source_config.schemas[table_name])
+                    .load(file_path)
+                )
 
             # Get the table namespace
             table_namespace = self.sink_config.get_table_namespace(table_name)

@@ -28,3 +28,13 @@ models:
       +materialized: table
       +database: warehouse
       +schema: stg
+
+seeds:
+  ecommerce_brazil:
+    product_category_name_translation:
+      enabled: true
+      quote_columns: false
+      delimiter: ","
+      column_types:
+        product_category_name: string
+        product_category_name_english: string

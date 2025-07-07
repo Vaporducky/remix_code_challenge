@@ -68,7 +68,7 @@ sources:
             description: ''
           - name: customer_state
             description: ''
-      - name: order_payments
+      - name: order_payment
         description: ''
         columns:
           - name: order_id

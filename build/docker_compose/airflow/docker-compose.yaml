@@ -352,6 +352,7 @@ services:
     volumes:
       - ../../../dbt:/usr/app
       - ../../../dbt:/root/.dbt
+      - ../../../data/seeds:/usr/app/ecommerce_brazil/seeds
     depends_on:
       postgres:
         condition: service_healthy
