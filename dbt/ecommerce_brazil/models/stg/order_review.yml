@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: order_review
+    description: >
+      This table contains customer satisfaction reviews submitted after the
+      delivery of an order or once the estimated delivery date has passed.
+      After completing a purchase on the Olist Store, customers are prompted
+      via email to provide feedback about their shopping experience. They can 
+      assign a score between 1 and 5 and optionally include a comment title and
+      message.
+      This model standardizes, validates, and filters out reviews with missing
+      or inconsistent data, ensuring quality inputs for customer satisfaction
+      analytics.
+    columns:
+      - name: review_id
+        description: >
+          Unique identifier for the review. Should be one per review submission.
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        description: Foreign key linking this review to the corresponding order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('order')
+              field: order_id
+
+      - name: review_score
+        description: >
+          Customer's rating of the satisfaction, represented as a score between
+          1 and 5.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['1', '2', '3', '4', '5']
+
+      - name: review_comment_title
+        description: Short title left by the customer
+
+      - name: review_comment_message
+        description: Comment message from the review left by the customer.
+
+      - name: review_creation_date
+        description: > 
+          The date in which the satisfaction survey was sent to the customer.
+        tests:
+          - not_null
+
+      - name: review_answer_timestamp
+        description: The timestamp in which the satisfaction survey was answered.

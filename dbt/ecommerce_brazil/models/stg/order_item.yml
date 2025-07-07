@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: order_item
+    description: >
+      Contains data about the items included in each order.
+      Each row represents a single product purchased within an order, including
+      its shipping deadline (`shipping_limit_date`), product price, and
+      associated freight cost.
+      An order can include multiple items (even multiple units of the same
+      product), each having individual price and freight allocations.
+  
+      This table enforces referential integrity to the `order`, `product`, and
+      `seller` tables and removes records with FK inconsistencies, negative
+      values, or composite primary key violations.
+    columns:
+      - name: order_id
+        description: Unique identifier of the order (FK to stg.order).
+        tests:
+          - not_null
+          - relationships:
+              to: ref('order')
+              field: order_id
+
+      - name: product_id_within_order
+        description: Represents the product item identifier within an order.
+        tests:
+          - not_null
+
+      - name: product_id
+        description: Identifier of the product included in the order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('product')
+              field: product_id
+
+      - name: seller_id
+        description: Identifier of the seller (logistics partner) for this product.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('seller')
+              field: seller_id
+
+      - name: shipping_limit_date
+        description: Latest acceptable date by which the seller must ship the product.
+        tests:
+          - not_null
+
+      - name: product_price
+        description: Price of the product, as listed at time of purchase.
+        tests:
+          - not_null
+
+      - name: freight_value
+        description: Cost of shipping the product.
+        tests:
+          - not_null

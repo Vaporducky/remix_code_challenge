@@ -39,7 +39,6 @@ class PlatformToRawJob:
                 .load()
             )
 
-        for table_name, schema in self.sink_config.targets.items():
             # Get the table namespace
             tgt_table_namespace = self.sink_config.get_table_namespace(table_name)
             logging.info(f"Writing into `{tgt_table_namespace}`.")

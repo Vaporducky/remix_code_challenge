@@ -1,4 +1,2 @@
-SELECT
-    'dbt' AS dummy_col,
-    *
+SELECT *
 FROM {{ source('raw', 'seller') }}

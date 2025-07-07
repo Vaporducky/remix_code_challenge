@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: order
+    description: "Staging table for cleaned and validated order data"
+    columns:
+      - name: order_id
+        description: "Primary identifier for the order"
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Foreign key to the customer table"
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('customer')
+              field: customer_id
+
+      - name: order_status
+        description: "Reference to the order status"
+        tests:
+          - accepted_values:
+              values:
+                - SHIPPED
+                - UNAVAILABLE
+                - INVOICED
+                - CREATED
+                - APPROVED
+                - PROCESSING
+                - DELIVERED
+                - CANCELED
+
+      - name: order_purchase_timestamp
+        description: "Timestamp of order purchase"
+        tests:
+          - not_null
+      - name: order_approved_at
+        description: "Payment approval timestamp"
+      - name: order_delivered_carrier_date
+        description: "Shows the order posting timestamp (when it was handled to the logistic partner)"
+      - name: order_delivered_customer_date
+        description: "Shows the actual order delivery date to the customer"
+      - name: order_estimated_delivery_date
+        description: "Shows the estimated delivery date that was informed to customer at the purchase moment"

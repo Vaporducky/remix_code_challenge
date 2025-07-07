@@ -5,7 +5,7 @@ file:
       "order": "data/input/olist_orders_dataset.csv",
       "order_item": "data/input/olist_order_items_dataset.csv",
       "order_payment": "data/input/olist_order_payments_dataset.csv",
-      "order_review": "data/input/olist_order_reviews_dataset.csv",
+      "order_review": "data/input/normalized_order_review.csv",
       "product": "data/input/olist_products_dataset.csv",
       "seller": "data/input/olist_sellers_dataset.csv"
     }
