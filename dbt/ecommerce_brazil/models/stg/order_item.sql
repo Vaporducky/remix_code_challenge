@@ -8,7 +8,7 @@ WITH order_item_normalized AS
         TRIM(seller_id) AS seller_id,
         shipping_limit_date,
         price AS product_price,
-        freight_value,
+        freight_value AS product_freight_value,
         COUNT(*) OVER (PARTITION BY TRIM(order_id), TRIM(order_item_id)) AS duplicate
     FROM {{ source('raw', 'order_item') }}
 ),
@@ -38,7 +38,7 @@ order_item_quarantine AS (
         (fk_product_id IS NULL)::int AS fk_product_id_quarantine,
         (fk_seller_id IS NULL)::int AS fk_seller_id_quarantine,
         (product_price < 0)::int AS product_price_quarantine,
-        (freight_value < 0)::int AS freight_value_quarantine,
+        (product_freight_value < 0)::int AS product_freight_value_quarantine,
         (shipping_limit_date IS NULL)::int AS shipping_limit_date_quarantine
     FROM order_item_fk_check
 ),
@@ -50,7 +50,7 @@ row_quarantine_filtering AS (
         seller_id,
         shipping_limit_date,
         product_price,
-        freight_value,
+        product_freight_value,
         GREATEST(
             order_id_quarantine,
             product_id_within_order_quarantine,
@@ -61,7 +61,7 @@ row_quarantine_filtering AS (
             fk_product_id_quarantine,
             fk_seller_id_quarantine,
             product_price_quarantine,
-            freight_value_quarantine,
+            product_freight_value_quarantine,
             shipping_limit_date_quarantine
         ) AS row_quarantine_flag
     FROM order_item_quarantine
@@ -71,8 +71,8 @@ SELECT
     product_id_within_order,
     product_id,
     seller_id,
-    shipping_limit_date,
+    shipping_limit_date AS shipping_limit_dt,
     product_price,
-    freight_value
+    product_freight_value
 FROM row_quarantine_filtering
 WHERE row_quarantine_flag = 0

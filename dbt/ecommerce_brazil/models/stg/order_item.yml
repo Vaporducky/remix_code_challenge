@@ -43,7 +43,7 @@ models:
               to: ref('seller')
               field: seller_id
 
-      - name: shipping_limit_date
+      - name: shipping_limit_dt
         description: Latest acceptable date by which the seller must ship the product.
         tests:
           - not_null
@@ -53,7 +53,7 @@ models:
         tests:
           - not_null
 
-      - name: freight_value
+      - name: product_freight_value
         description: Cost of shipping the product at time of purchase.
         tests:
           - not_null

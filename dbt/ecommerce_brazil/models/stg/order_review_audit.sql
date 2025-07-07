@@ -54,7 +54,7 @@ SELECT
     review_score,
     review_comment_title,
     review_comment_message,
-    review_creation_date,
-    review_answer_timestamp
+    review_creation_date AS review_creation_dt,
+    review_answer_timestamp AS review_answer_ts
 FROM row_quarantine_filtering
 WHERE row_quarantine_flag = 0

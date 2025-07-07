@@ -37,11 +37,14 @@ models:
         description: "Timestamp of order purchase"
         tests:
           - not_null
-      - name: order_approved_at
+      - name: order_approved_at_ts
         description: "Payment approval timestamp"
-      - name: order_delivered_carrier_date
+
+      - name: order_delivered_carrier_dt
         description: "Shows the order posting timestamp (when it was handled to the logistic partner)"
-      - name: order_delivered_customer_date
+
+      - name: order_delivered_customer_dt
         description: "Shows the actual order delivery date to the customer"
-      - name: order_estimated_delivery_date
+
+      - name: order_estimated_delivery_dt
         description: "Shows the estimated delivery date that was informed to customer at the purchase moment"

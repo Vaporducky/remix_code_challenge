@@ -89,10 +89,10 @@ SELECT
     order_id,
     customer_id,
     order_status,
-    order_purchase_timestamp,
-    order_approved_at,
-    order_delivered_carrier_date,
-    order_delivered_customer_date,
-    order_estimated_delivery_date
+    order_purchase_timestamp AS order_purchase_ts,
+    order_approved_at AS order_approved_at_ts,
+    order_delivered_carrier_date AS order_delivered_carrier_dt,
+    order_delivered_customer_date AS order_delivered_customer_dt,
+    order_estimated_delivery_date AS order_estimated_delivery_dt
 FROM row_quarantine_filtering
 WHERE row_quarantine_flag = 0

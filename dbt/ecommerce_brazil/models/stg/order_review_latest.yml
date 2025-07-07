@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: order_review_latest
+    description: >
+      This table shows only the latest review data such that the latest non-null
+      score review associated information
+
+    columns:
+      - name: review_id
+        description: >
+          Unique identifier for the review. Should be one per review submission.
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        description: Foreign key linking this review to the corresponding order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('order')
+              field: order_id
+
+      - name: latest_review_score
+        description: >
+          Customer's rating of the satisfaction, represented as a score between
+          1 and 5.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['1', '2', '3', '4', '5']
+
+      - name: latest_review_comment_title
+        description: Short title left by the customer
+
+      - name: latest_review_comment_message
+        description: Comment message from the review left by the customer.
+
+      - name: latest_review_creation_dt
+        description: > 
+          The date in which the satisfaction survey was sent to the customer.
+        tests:
+          - not_null
+
+      - name: latest_review_answer_ts
+        description: The timestamp in which the satisfaction survey was answered.
