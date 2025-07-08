@@ -33,7 +33,7 @@ models:
                 - DELIVERED
                 - CANCELED
 
-      - name: order_purchase_timestamp
+      - name: order_purchase_ts
         description: "Timestamp of order purchase"
         tests:
           - not_null
