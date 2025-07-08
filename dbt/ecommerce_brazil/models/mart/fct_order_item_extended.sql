@@ -33,7 +33,7 @@ SELECT
     CASE
         WHEN "order".order_delivered_customer_dt IS NOT NULL
         THEN EXTRACT(DAY FROM
-                     "order".order_delivered_customer_dt - "order".order_purchase_ts)
+                     "order".order_delivered_customer_dt - "order".order_purchase_ts)::int
         ELSE NULL
     END AS days_until_delivery
 FROM {{ ref('order_item') }} AS order_item
