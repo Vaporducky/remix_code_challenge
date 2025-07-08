@@ -71,7 +71,7 @@ SELECT
     product_id_within_order,
     product_id,
     seller_id,
-    shipping_limit_date AS shipping_limit_dt,
+    shipping_limit_date AS item_shipping_limit_dt,
     product_price,
     product_freight_value
 FROM row_quarantine_filtering

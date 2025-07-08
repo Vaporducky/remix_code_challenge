@@ -43,7 +43,7 @@ models:
               to: ref('seller')
               field: seller_id
 
-      - name: shipping_limit_dt
+      - name: item_shipping_limit_dt
         description: Latest acceptable date by which the seller must ship the product.
         tests:
           - not_null

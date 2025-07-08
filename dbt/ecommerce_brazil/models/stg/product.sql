@@ -54,6 +54,17 @@ row_quarantine_filtering AS (
     FROM product_quarantine
 )
 SELECT
+    MD5(
+        COALESCE(product_category_name, '') || '|' ||
+        COALESCE(product_category_name_english, '') || '|' ||
+        COALESCE(product_name_length::text, '') || '|' ||
+        COALESCE(product_description_length::text, '') || '|' ||
+        COALESCE(product_photos_quantity::text, '') || '|' ||
+        COALESCE(product_weight_in_grams::text, '') || '|' ||
+        COALESCE(product_length_cm::text, '') || '|' ||
+        COALESCE(product_height_cm::text, '') || '|' ||
+        COALESCE(product_width_cm::text, '')
+    ) AS product_sk,
     product_id,
     product_category_name,
     product_category_name_english,
