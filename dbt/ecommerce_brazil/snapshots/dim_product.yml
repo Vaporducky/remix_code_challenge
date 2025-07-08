@@ -1,0 +1,10 @@
+snapshots:
+  - name: dim_product
+    relation: ref('product')
+    config:
+      database: warehouse
+      schema: mart
+      unique_key: product_id
+      strategy: check
+      check_cols:
+        - product_sk

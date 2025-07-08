@@ -13,6 +13,11 @@ models:
       Category names are normalized using a seed lookup table.
 
     columns:
+      - name: product_sk
+        description: >
+          MD5 hash of the product attributes (not the ID) used to create the
+          historical of the mart.
+
       - name: product_id
         description: Unique identifier for each product.
         tests:

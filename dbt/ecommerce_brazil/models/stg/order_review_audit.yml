@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: order_review
+  - name: order_review_audit
     description: >
       This table contains customer satisfaction reviews submitted after the
       delivery of an order or once the estimated delivery date has passed.
@@ -43,11 +43,11 @@ models:
       - name: review_comment_message
         description: Comment message from the review left by the customer.
 
-      - name: review_creation_date
+      - name: review_creation_dt
         description: > 
           The date in which the satisfaction survey was sent to the customer.
         tests:
           - not_null
 
-      - name: review_answer_timestamp
+      - name: review_answer_ts
         description: The timestamp in which the satisfaction survey was answered.
