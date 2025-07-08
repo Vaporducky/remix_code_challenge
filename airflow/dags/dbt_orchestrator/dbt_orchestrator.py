@@ -14,7 +14,7 @@ ZIP_PATH = LANDING_DIR / ZIP_NAME
 
 @dag(
     schedule="@once",
-    start_date=None,
+    start_date=pendulum.datetime(2000, 1, 1),
     catchup=False,
     default_args={"retries": 0},
     template_searchpath="/opt/airflow/dags/dbt_orchestrator/scripts",
